@@ -1,3 +1,15 @@
+# Marios Notes
+
+Basically in the Alpha version you can load one image and after some training it will recolor the grayscale image
+Of course we want to generalize and and train a model that can recolor any other image that hasn't been trained on.
+
+So next comes the beta version where you can train a model with multiple images. I added some of the results in the repository which seem promising
+
+Next it is the full version. I tried training with imagenet data, but didn't get any good results as the pictures stayed black and white. Maybe it needs more training
+
+Below in the original repo readme you can find recomendations on each version on how much training you should do with each model
+
+
 ![Coloring Black and White Images with Neural Networks](./README_images/coloring-black-and-white-images-with-neural-networks.svg)
 
 ---
