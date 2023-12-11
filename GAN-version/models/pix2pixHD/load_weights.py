@@ -6,7 +6,9 @@ from discriminator_low import DiscriminatorLow
 from style_features import StyleFeatures
 from enhancer import Enhancer
 
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow.keras.optimizers.legacy import Adam
+
 from keras.models import model_from_json
 from utils.conv2d_r import Conv2D_r
 from keras.utils import multi_gpu_model

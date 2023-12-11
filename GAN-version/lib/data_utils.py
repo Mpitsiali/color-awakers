@@ -68,23 +68,63 @@ def generate_label_data(batch_size, output_size_pred, output_size_features):
     return fake_labels, true_labels, placeholder_input
 
 
-def save_each_image(colored_layers, BW_layer, cycle, nr, path, ending):
+# def save_each_image(colored_layers, BW_layer, cycle, nr, path, ending):
     
-    cur = np.zeros((128, 128, 3))
-    cur[:,:,0] = BW_layer[:,:,0] * 100
-    cur[:,:,1:] = colored_layers * 128
-    imsave(os.path.join(path, cycle + nr + ending), lab2rgb(cur))
+#     cur = np.zeros((128, 128, 3))
+#     cur[:,:,0] = BW_layer[:,:,0] * 100
+#     cur[:,:,1:] = colored_layers * 128
+#     imsave(os.path.join(path, cycle + nr + ending), lab2rgb(cur))
+
+# def save_sample_images(colored_layers, BW_layer, cycle, path):
+#     for i in range(len(colored_layers)):
+#         save_each_image(colored_layers[i], BW_layer[i], cycle, str(i), path, '-gen.png')
+from skimage.color import lab2rgb
+from skimage import img_as_ubyte
+import numpy as np
+import os
+from imageio import imsave
+def clip_lab_values(lab_image):
+    lab_image[:, :, 1:] = np.clip(lab_image[:, :, 1:], -128, 127)
+    return lab_image
+
+# Use this function before calling lab2rgb
+# cur = clip_lab_values(cur)
+# rgb_image = lab2rgb(cur)
+
+def save_each_image(colored_layers, BW_layer, cycle, nr, path, ending):
+    cur = np.zeros((128, 128, 3), dtype=np.float64)
+    cur[:, :, 0] = BW_layer[:, :, 0] * 100  # L channel
+    cur[:, :, 1:] = colored_layers * 128  # a and b channels
+
+    # Convert LAB to RGB
+    cur = clip_lab_values(cur)
+    rgb_image = lab2rgb(cur)
+
+    # Convert to uint8 type for saving
+    rgb_image_uint8 = img_as_ubyte(rgb_image)
+
+    # Save the image
+    imsave(os.path.join(path, cycle + nr + ending), rgb_image_uint8)
 
 def save_sample_images(colored_layers, BW_layer, cycle, path):
     for i in range(len(colored_layers)):
         save_each_image(colored_layers[i], BW_layer[i], cycle, str(i), path, '-gen.png')
-
         
-def write_log(callback, names, logs, batch_no):
-    for name, value in zip(names, logs):
-        summary = tf.Summary()
-        summary_value = summary.value.add()
-        summary_value.simple_value = value
-        summary_value.tag = name
-        callback.writer.add_summary(summary, batch_no)
-        callback.writer.flush()
+# def write_log(callback, names, logs, batch_no):
+#     for name, value in zip(names, logs):
+#         summary = tf.summary()
+#         summary_value = summary.value.add()
+#         summary_value.simple_value = value
+#         summary_value.tag = name
+#         callback.writer.add_summary(summary, batch_no)
+#         callback.writer.flush()
+
+
+# def write_log(log_dir, names, logs, batch_no):
+#     with tf.summary.create_file_writer(log_dir).as_default():
+#         for name, value in zip(names, logs):
+#             tf.summary.scalar(name, value, step=batch_no)
+#         tf.summary.flush(writer=log_dir)
+
+def write_log(log_dir, names, logs, batch_no):
+    pass

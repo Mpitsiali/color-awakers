@@ -2,10 +2,12 @@ from .utils.calc_output_and_feature_size import calc_output_and_feature_size
 from .utils.instance_normalization import InstanceNormalization
 from keras.models import model_from_json, Model
 from .utils.sn import ConvSN2D
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow.keras.optimizers.legacy import Adam
+
 from keras import backend as K
 from .utils.attention import Attention
-from keras.utils import multi_gpu_model
+# from keras.utils import multi_gpu_model
 from keras.layers import Conv2D, Lambda, add, AvgPool2D, Activation, UpSampling2D, Input, concatenate, Reshape, LeakyReLU, Reshape, Flatten, concatenate
 
 
@@ -76,7 +78,7 @@ class DiscriminatorFull():
             self.save_model = self.model
         else:
             self.save_model = Model(discriminator_input, [x, discriminator_features])
-            self.model = multi_gpu_model(self.save_model, gpus=gpus)
+            # self.model = multi_gpu_model(self.save_model, gpus=gpus)
 
         loss_weights_d = [1, 0]
         optimizer = Adam(self.learning_rate, 0.5, decay=self.decay_rate)

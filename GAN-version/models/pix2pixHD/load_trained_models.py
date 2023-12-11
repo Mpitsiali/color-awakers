@@ -1,5 +1,7 @@
 from keras.models import Model, save_model, load_model
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow.keras.optimizers.legacy import Adam
+
 from .utils.conv2d_r import Conv2D_r
 from keras.utils import multi_gpu_model
 from .utils.instance_normalization import InstanceNormalization
@@ -28,7 +30,7 @@ class CoreGeneratorEnhancer():
         
         core_generator_original = load_model(resource_path + 'core_generator.h5', custom_objects={'Conv2D_r': Conv2D_r, 'InstanceNormalization': InstanceNormalization, 'tf': tf, 'ConvSN2D': ConvSN2D, 'DenseSN': DenseSN})
         core_generator = Model(inputs=core_generator_original.input, outputs=[core_generator_original.output, core_generator_original.get_layer('core_features_org').output])
-        core_generator.name = "core_generator"
+        core_generator.name_ = "core_generator"
         core_generator.trainable = True
 	
         self.model = core_generator        
@@ -53,7 +55,7 @@ class CoreGenerator():
         core_generator = load_model(resource_path + 'core_generator.h5', custom_objects={'Conv2D_r': Conv2D_r, 'InstanceNormalization': InstanceNormalization, 'tf': tf, 'ConvSN2D': ConvSN2D, 'DenseSN': DenseSN})
         #core_generator = Model(inputs=core_generator_original.input, 
         #                    outputs=[core_generator_original.get_layer('core_features_org').output, # core_generator_original.get_layer('core_features_true').output])
-        core_generator.name = "core_generator"
+        core_generator.name_ = "core_generator"
         core_generator.trainable = True
 	        
         self.model = core_generator

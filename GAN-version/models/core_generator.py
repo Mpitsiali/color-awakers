@@ -1,11 +1,12 @@
-from keras.engine.topology import Input
-from keras.engine.training import Model
-from keras.layers import LeakyReLU, Concatenate, Dropout
-from keras.layers.convolutional import Conv2D, UpSampling2D, Conv2DTranspose
-from keras.layers.core import Activation, SpatialDropout2D
-from keras.layers.merge import concatenate
-from keras.layers.normalization import BatchNormalization
-from keras.layers.pooling import MaxPooling2D
+
+from tensorflow.keras.models import Model
+
+from keras.layers import LeakyReLU, Concatenate, Dropout ,Input
+from keras.layers import Conv2D, UpSampling2D, Conv2DTranspose
+from keras.layers import Activation, SpatialDropout2D
+from keras.layers import concatenate
+from keras.layers import BatchNormalization
+from keras.layers import MaxPooling2D
 from .utils.instance_normalization import InstanceNormalization
 from .utils.sn import ConvSN2D
 from .utils.attention import Attention
@@ -83,7 +84,7 @@ class CoreGenerator():
         output = ConvSN2D(2, kernel_size=(7,7), strides=1, padding='same', activation='tanh')(u6)
         
         core_generator = Model(d1, output)
-        core_generator.name = "core_generator"
+        core_generator.name_ = "core_generator"
         
         # --------------
         #  Compile Model

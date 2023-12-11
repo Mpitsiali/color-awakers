@@ -148,7 +148,7 @@ class CoreGenerator():
         picture_lowres = Activation('tanh')(decoder)
         
         core_generator = Model([core_generator_idea, core_generator_style], [picture_lowres, features])
-        core_generator.name = "core_generator"
+        core_generator.name_ = "core_generator"
         
         # --------------
         #  Compile Model

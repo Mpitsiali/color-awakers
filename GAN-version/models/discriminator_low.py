@@ -2,10 +2,12 @@ from .utils.calc_output_and_feature_size import calc_output_and_feature_size
 from .utils.sn import ConvSN2D
 from .utils.instance_normalization import InstanceNormalization
 from keras.models import model_from_json, Model
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow.keras.optimizers.legacy import Adam
+
 from keras import backend as K
 from .utils.attention import Attention
-from keras.utils import multi_gpu_model
+# from keras.utils import multi_gpu_model
 from keras.layers import Conv2D, Lambda, add, AvgPool2D, Activation, UpSampling2D, Input, concatenate, Reshape, LeakyReLU, Reshape, Flatten, concatenate
 
 class DiscriminatorLow():
@@ -77,6 +79,6 @@ class DiscriminatorLow():
             self.save_model = self.model
         else:
             self.save_model = Model(discriminator_low_res_input, [x, discriminator_low_features])
-            self.model = multi_gpu_model(self.save_model, gpus=self.gpus)
+            # self.model = multi_gpu_model(self.save_model, gpus=self.gpus)
         
         self.model.compile(optimizer=optimizer, loss_weights=loss_weights_d, loss=loss_d)

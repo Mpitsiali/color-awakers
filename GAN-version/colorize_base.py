@@ -2,15 +2,12 @@
 import os
 import time
 
-# Extra
-from keras.engine.topology import Input
-from keras.engine.training import Model
-from keras.layers import LeakyReLU, Concatenate, Dropout
-from keras.layers.convolutional import Conv2D, UpSampling2D, Conv2DTranspose
-from keras.layers.core import Activation, SpatialDropout2D
-from keras.layers.merge import concatenate
-from keras.layers.normalization import BatchNormalization
-from keras.layers.pooling import MaxPooling2D
+from keras.layers import LeakyReLU, Concatenate, Dropout, Input
+from keras.layers import Conv2D, UpSampling2D, Conv2DTranspose
+from keras.layers import Activation, SpatialDropout2D
+from keras.layers import concatenate
+from keras.layers import BatchNormalization
+from keras.layers import MaxPooling2D
 from models.utils.instance_normalization import InstanceNormalization
 from models.utils.sn import ConvSN2D
 from models.utils.calc_output_and_feature_size import calc_output_and_feature_size
@@ -24,12 +21,15 @@ from lib.data_utils import generator, generate_label_data
 
 # Keras Modules
 import keras
-from keras.utils import multi_gpu_model
+# from keras.utils import multi_gpu_model
+# from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
 from keras.layers import Lambda, UpSampling2D, Input, concatenate
-from keras.utils.data_utils import  GeneratorEnqueuer
-from keras.utils import multi_gpu_model
+from keras.utils import  GeneratorEnqueuer
+# from keras.utils import multi_gpu_model
 from keras.callbacks import TensorBoard
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow.keras.optimizers.legacy import Adam
+
 from keras.models import Model, save_model, load_model
 from keras import backend as K
 K.clear_session()
@@ -51,15 +51,17 @@ import numpy as np
 height = 128
 width = 128
 channels = 1
-epochs = 10
+epochs = 50
 gpus = 1
 batch_size = 5
-cpus = 2
-use_multiprocessing = True
+cpus = 1
+use_multiprocessing = False
 save_weights_every_n_epochs = 0.01
 max_queue_size=batch_size * 1
-img_dir = "./Train/"
-test_dir = "./Test/"
+img_dir = "GAN-version/Train/"
+test_dir = "GAN-version/Test/"
+# img_dir = "GAN-version/train_image_net copy/"
+# test_dir = "GAN-version/test_image_net/"
 resource_dir = "./resources/"
 dataset_len = len(os.listdir(img_dir))
 testset_len = len(os.listdir(test_dir))
@@ -144,7 +146,7 @@ pred_low, features_low = discriminator_low.model(disc_input)
 # Compile GAN
 gan_core = Model(inputs=gan_x, outputs=[gan_output, features_full, features_medium, features_low, pred_full, pred_medium, pred_low])                  
 
-gan_core.name = "gan_core"
+gan_core.name_ = "gan_core"
 optimizer = Adam(learning_rate, 0.5, decay=decay_rate)
 loss_gan = ['mae', 'mae', 'mae', 'mae', 'mse', 'mse', 'mse']
 loss_weights_gan = [1, 3.33, 3.33, 3.33, 0.33, 0.33, 0.33]
@@ -180,8 +182,12 @@ discriminator_low_multi.compile(optimizer=optimizer_dis, loss_weights=loss_weigh
 # --------------------------------------------------
 #  Initiate Generator Queue
 # --------------------------------------------------
+# def create_generator():
+#     return generator(X, img_dir, batch_size, dataset_len, width, height)
+# enqueuer = GeneratorEnqueuer(create_generator, use_multiprocessing=use_multiprocessing)
 
-enqueuer = GeneratorEnqueuer(generator(X, img_dir, batch_size, dataset_len, width, height), use_multiprocessing=use_multiprocessing, wait_time=0.01)
+# enqueuer = GeneratorEnqueuer(create_generator(X, img_dir, batch_size, dataset_len, width, height), use_multiprocessing=use_multiprocessing)
+enqueuer = GeneratorEnqueuer(generator(X, img_dir, batch_size, dataset_len, width, height), use_multiprocessing=use_multiprocessing)
 
 enqueuer.start(workers=cpus, max_queue_size=max_queue_size)
 output_generator = enqueuer.get()
@@ -324,5 +330,3 @@ for i in range(0, cycles):
         discriminator_medium.model.save_weights(resource_dir + "discriminator_medium.h5")
         discriminator_low.model.save_weights(resource_dir + "discriminator_low.h5")
         core_generator.model.save_weights(resource_dir + "core_generator.h5")
-
-
